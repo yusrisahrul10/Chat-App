@@ -19,7 +19,7 @@ class SignUpActivity : AppCompatActivity() {
         setListeners()
     }
 
-    fun setListeners() {
+    private fun setListeners() {
         with(binding) {
             textSignIn.setOnClickListener {
                 startActivity(Intent(this@SignUpActivity, SignUpActivity::class.java))
