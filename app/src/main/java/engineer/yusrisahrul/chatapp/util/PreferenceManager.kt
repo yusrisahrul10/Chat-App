@@ -22,8 +22,8 @@ class PreferenceManager (context: Context) {
         editor.apply()
     }
 
-    fun getString(key: String) : String? {
-        return preference.getString(key, "")
+    fun getString(key: String) : String {
+        return preference.getString(key, "") ?: ""
     }
 
     fun clear() {
