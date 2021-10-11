@@ -1,5 +1,6 @@
 package engineer.yusrisahrul.chatapp.activites
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
@@ -16,6 +17,7 @@ import engineer.yusrisahrul.chatapp.util.Constants.Companion.KEY_EMAIL
 import engineer.yusrisahrul.chatapp.util.Constants.Companion.KEY_FCM_TOKEN
 import engineer.yusrisahrul.chatapp.util.Constants.Companion.KEY_IMAGE
 import engineer.yusrisahrul.chatapp.util.Constants.Companion.KEY_NAME
+import engineer.yusrisahrul.chatapp.util.Constants.Companion.KEY_USER
 import engineer.yusrisahrul.chatapp.util.Constants.Companion.KEY_USER_ID
 import engineer.yusrisahrul.chatapp.util.PreferenceManager
 
@@ -28,7 +30,7 @@ class UsersActivity : AppCompatActivity() {
     private lateinit var preferenceManager: PreferenceManager
 
     private val userAdapter: UsersAdapter by lazy {
-        UsersAdapter(this)
+        UsersAdapter(this) {item -> onUserClicked(item)}
     }
 
     private val users : MutableList<User> by lazy {
@@ -100,5 +102,12 @@ class UsersActivity : AppCompatActivity() {
                 progressBar.visibility = View.INVISIBLE
             }
         }
+    }
+
+    private fun onUserClicked(user: User) {
+        startActivity(Intent(this, ChatActivity::class.java).also {
+            it.putExtra(KEY_USER, user)
+        })
+        finish()
     }
 }

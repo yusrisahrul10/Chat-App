@@ -11,7 +11,8 @@ import engineer.yusrisahrul.chatapp.databinding.ItemContainerUserBinding
 import engineer.yusrisahrul.chatapp.models.User
 
 class UsersAdapter(
-    private val context: Context
+    private val context: Context,
+    private val listeners: (User) -> Unit
 ) : RecyclerView.Adapter<UsersAdapter.ViewHolder>() {
 
     private var users = ArrayList<User>()
@@ -33,6 +34,10 @@ class UsersAdapter(
             textEmail.text = users[position].email
             imageProfile.setImageBitmap(getUserImage(users[position].image!!))
 //            notifyItemChanged(users[position])
+
+            root.setOnClickListener {
+                listeners(users[position])
+            }
         }
     }
     override fun getItemCount(): Int = users.size
