@@ -15,7 +15,7 @@ import engineer.yusrisahrul.chatapp.adapter.ChatAdapter.SentMessageViewHolder
 
 class ChatAdapter(
     private val chatMessage: List<ChatMessage>,
-    private val receiverProfilImage: Bitmap,
+    private val receiverProfileImage: Bitmap,
     private val senderId: String
 
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>(){
@@ -41,7 +41,7 @@ class ChatAdapter(
         if (getItemViewType(position) == ViewType.SENT.ordinal) {
             (holder as SentMessageViewHolder).setData(chatMessage[position])
         } else {
-            (holder as ReceivedMessageViewHolder).setData(chatMessage[position], receiverProfilImage)
+            (holder as ReceivedMessageViewHolder).setData(chatMessage[position], receiverProfileImage)
 
         }
     }

@@ -76,6 +76,7 @@ class UsersActivity : AppCompatActivity() {
                             queryDocumentSnapshot.getString(KEY_EMAIL),
                             queryDocumentSnapshot.getString(KEY_IMAGE),
                             queryDocumentSnapshot.getString(KEY_FCM_TOKEN),
+                            queryDocumentSnapshot.id
                         )
                         users.add(user)
                     }

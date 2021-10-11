@@ -7,4 +7,5 @@ data class User(
     val email: String?,
     val image: String?,
     val token: String?,
+    val id: String?,
 ) : Serializable

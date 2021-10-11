@@ -4,6 +4,7 @@
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:layout_marginTop="@dimen/_8sdp"
     android:padding="@dimen/_4sdp">
 
     <TextView
@@ -11,8 +12,12 @@
         android:layout_height="wrap_content"
         android:id="@+id/textMessage"
         android:background="@drawable/background_sent_message"
-        android:padding="@dimen/_12sdp"
+        android:paddingStart="@dimen/_12sdp"
+        android:paddingTop="@dimen/_8sdp"
+        android:paddingEnd="@dimen/_12sdp"
+        android:paddingBottom="@dimen/_8sdp"
         android:textColor="@color/white"
+        app:layout_constraintWidth_max="wrap"
         tools:text="Message"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -24,7 +29,7 @@
         android:id="@+id/textDateTime"
         android:layout_marginTop="@dimen/_4sdp"
         android:textColor="@color/secondary_text"
-        android:textSize="@dimen/_10ssp"
+        android:textSize="@dimen/_8ssp"
         tools:text="Date Time"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/textMessage"/>
