@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Base64
 import android.view.View
+import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.EventListener
 import com.google.firebase.firestore.FirebaseFirestore
@@ -17,10 +18,19 @@ import engineer.yusrisahrul.chatapp.databinding.ActivityChatBinding
 import engineer.yusrisahrul.chatapp.databinding.ActivityMainBinding
 import engineer.yusrisahrul.chatapp.models.ChatMessage
 import engineer.yusrisahrul.chatapp.models.User
+import engineer.yusrisahrul.chatapp.util.Constants
 import engineer.yusrisahrul.chatapp.util.Constants.Companion.KEY_COLLECTION_CHAT
+import engineer.yusrisahrul.chatapp.util.Constants.Companion.KEY_COLLECTION_CONVERSATIONS
+import engineer.yusrisahrul.chatapp.util.Constants.Companion.KEY_IMAGE
+import engineer.yusrisahrul.chatapp.util.Constants.Companion.KEY_LAST_MESSAGE
 import engineer.yusrisahrul.chatapp.util.Constants.Companion.KEY_MESSAGE
+import engineer.yusrisahrul.chatapp.util.Constants.Companion.KEY_NAME
 import engineer.yusrisahrul.chatapp.util.Constants.Companion.KEY_RECEIVER_ID
+import engineer.yusrisahrul.chatapp.util.Constants.Companion.KEY_RECEIVER_IMAGE
+import engineer.yusrisahrul.chatapp.util.Constants.Companion.KEY_RECEIVER_NAME
 import engineer.yusrisahrul.chatapp.util.Constants.Companion.KEY_SENDER_ID
+import engineer.yusrisahrul.chatapp.util.Constants.Companion.KEY_SENDER_IMAGE
+import engineer.yusrisahrul.chatapp.util.Constants.Companion.KEY_SENDER_NAME
 import engineer.yusrisahrul.chatapp.util.Constants.Companion.KEY_TIMESTAMP
 import engineer.yusrisahrul.chatapp.util.Constants.Companion.KEY_USER
 import engineer.yusrisahrul.chatapp.util.Constants.Companion.KEY_USER_ID
@@ -42,6 +52,8 @@ class ChatActivity : AppCompatActivity() {
 
     private lateinit var chatAdapter: ChatAdapter
 
+    private var conversationId: String? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
@@ -62,10 +74,24 @@ class ChatActivity : AppCompatActivity() {
     private fun sendMessage() {
         val message = HashMap<String, Any>()
         message[KEY_SENDER_ID] = preferenceManager.getString(KEY_USER_ID)
-        message[KEY_RECEIVER_ID] = receiverUser.id ?: ""
+        message[KEY_RECEIVER_ID] = receiverUser.id
         message[KEY_MESSAGE] = binding.inputMessage.text.toString()
         message[KEY_TIMESTAMP] = Date()
         database.collection(KEY_COLLECTION_CHAT).add(message)
+        if (conversationId != null) {
+            updateConversation(binding.inputMessage.text.toString())
+        } else {
+            val conversation = HashMap<String, Any>()
+            conversation[KEY_SENDER_ID] = preferenceManager.getString(KEY_USER_ID)
+            conversation[KEY_SENDER_NAME] = preferenceManager.getString(KEY_NAME)
+            conversation[KEY_SENDER_IMAGE] = preferenceManager.getString(KEY_IMAGE)
+            conversation[KEY_RECEIVER_ID] = receiverUser.id
+            conversation[KEY_RECEIVER_NAME] = receiverUser.name
+            conversation[KEY_LAST_MESSAGE] = binding.inputMessage.text.toString()
+            conversation[KEY_RECEIVER_IMAGE] = receiverUser.image
+            conversation[KEY_TIMESTAMP] = Date()
+            addConversation(conversation)
+        }
         binding.inputMessage.text = null
     }
 
@@ -78,6 +104,47 @@ class ChatActivity : AppCompatActivity() {
             .whereEqualTo(KEY_SENDER_ID, receiverUser.id)
             .whereEqualTo(KEY_RECEIVER_ID, preferenceManager.getString(KEY_USER_ID))
             .addSnapshotListener(eventListener)
+    }
+
+    private fun addConversation(conversation: HashMap<String, Any>) {
+        database.collection(KEY_COLLECTION_CONVERSATIONS)
+            .add(conversation)
+            .addOnSuccessListener {
+                conversationId = it.id
+            }
+    }
+
+    private fun updateConversation(message: String) {
+        val conversationId = conversationId ?: ""
+        val documentReference = database.collection(
+            KEY_COLLECTION_CONVERSATIONS
+        ).document(conversationId)
+        documentReference.update(KEY_LAST_MESSAGE, message, KEY_TIMESTAMP, Date())
+    }
+
+    private fun checkForConversation() {
+        if (chatMessages.size != 0) {
+            checkForConversationRemotely(preferenceManager.getString(KEY_USER_ID),
+            receiverUser.id)
+            checkForConversationRemotely(receiverUser.id,
+            preferenceManager.getString(KEY_USER_ID))
+        }
+    }
+
+    private fun checkForConversationRemotely(senderId: String, receiverId: String) {
+        database.collection(KEY_COLLECTION_CONVERSATIONS)
+            .whereEqualTo(KEY_SENDER_ID, senderId)
+            .whereEqualTo(KEY_RECEIVER_ID, receiverId)
+            .get()
+            .addOnCompleteListener(conversationOnCompleteListener)
+    }
+
+    private val conversationOnCompleteListener = OnCompleteListener<QuerySnapshot> {
+        val result = it.result?.documents?.size ?: 0
+        if (it.isSuccessful && it.result != null && result > 0) {
+            val documentSnapshot = it.result!!.documents[0]
+            conversationId = documentSnapshot.id
+        }
     }
 
     private val eventListener = EventListener<QuerySnapshot> {
@@ -93,7 +160,10 @@ class ChatActivity : AppCompatActivity() {
                         documentChange.document.getString(KEY_RECEIVER_ID),
                         documentChange.document.getString(KEY_MESSAGE),
                         getReadableDateTime(documentChange.document.getDate(KEY_TIMESTAMP)),
-                        documentChange.document.getDate(KEY_TIMESTAMP)
+                        documentChange.document.getDate(KEY_TIMESTAMP),
+                        null,
+                        null,
+                        ""
                     )
                     chatMessages.add(chatMessage)
                 }
@@ -112,6 +182,9 @@ class ChatActivity : AppCompatActivity() {
         binding.chatRecyclerView.visibility = View.VISIBLE
     }
         binding.progressBar.visibility = View.GONE
+        if (conversationId == null) {
+            checkForConversation()
+        }
     }
 
     private fun getBitmapFromEncodedString(encodedImage: String?) : Bitmap =

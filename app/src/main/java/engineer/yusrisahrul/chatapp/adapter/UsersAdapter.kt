@@ -32,7 +32,7 @@ class UsersAdapter(
         with(holder.view) {
             textName.text = users[position].name
             textEmail.text = users[position].email
-            imageProfile.setImageBitmap(getUserImage(users[position].image!!))
+            imageProfile.setImageBitmap(getUserImage(users[position].image))
 //            notifyItemChanged(users[position])
 
             root.setOnClickListener {

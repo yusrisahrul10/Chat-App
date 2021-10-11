@@ -17,7 +17,6 @@ class ChatAdapter(
     private val chatMessage: List<ChatMessage>,
     private val receiverProfileImage: Bitmap,
     private val senderId: String
-
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>(){
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {

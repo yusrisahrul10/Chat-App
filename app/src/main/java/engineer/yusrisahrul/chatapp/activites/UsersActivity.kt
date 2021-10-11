@@ -72,9 +72,9 @@ class UsersActivity : AppCompatActivity() {
                             continue
                         }
                         val user = User(
-                            queryDocumentSnapshot.getString(KEY_NAME),
+                            queryDocumentSnapshot.getString(KEY_NAME)!!,
                             queryDocumentSnapshot.getString(KEY_EMAIL),
-                            queryDocumentSnapshot.getString(KEY_IMAGE),
+                            queryDocumentSnapshot.getString(KEY_IMAGE)!!,
                             queryDocumentSnapshot.getString(KEY_FCM_TOKEN),
                             queryDocumentSnapshot.id
                         )
