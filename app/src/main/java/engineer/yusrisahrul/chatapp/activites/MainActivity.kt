@@ -32,7 +32,7 @@ import engineer.yusrisahrul.chatapp.util.Constants.Companion.KEY_TIMESTAMP
 import engineer.yusrisahrul.chatapp.util.Constants.Companion.KEY_USER_ID
 import engineer.yusrisahrul.chatapp.util.PreferenceManager
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : BaseActivity() {
 
     private val binding: ActivityMainBinding by lazy {
         ActivityMainBinding.inflate(layoutInflater)

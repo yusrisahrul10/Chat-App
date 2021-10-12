@@ -21,7 +21,7 @@ import engineer.yusrisahrul.chatapp.util.Constants.Companion.KEY_USER
 import engineer.yusrisahrul.chatapp.util.Constants.Companion.KEY_USER_ID
 import engineer.yusrisahrul.chatapp.util.PreferenceManager
 
-class UsersActivity : AppCompatActivity() {
+class UsersActivity : BaseActivity() {
 
     private val binding: ActivityUsersBinding by lazy {
         ActivityUsersBinding.inflate(layoutInflater)

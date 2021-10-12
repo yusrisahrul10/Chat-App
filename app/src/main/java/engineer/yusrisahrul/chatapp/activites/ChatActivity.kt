@@ -2,7 +2,6 @@ package engineer.yusrisahrul.chatapp.activites
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Base64
 import android.view.View
@@ -19,8 +18,10 @@ import engineer.yusrisahrul.chatapp.databinding.ActivityMainBinding
 import engineer.yusrisahrul.chatapp.models.ChatMessage
 import engineer.yusrisahrul.chatapp.models.User
 import engineer.yusrisahrul.chatapp.util.Constants
+import engineer.yusrisahrul.chatapp.util.Constants.Companion.KEY_AVAILABILITY
 import engineer.yusrisahrul.chatapp.util.Constants.Companion.KEY_COLLECTION_CHAT
 import engineer.yusrisahrul.chatapp.util.Constants.Companion.KEY_COLLECTION_CONVERSATIONS
+import engineer.yusrisahrul.chatapp.util.Constants.Companion.KEY_COLLECTION_USERS
 import engineer.yusrisahrul.chatapp.util.Constants.Companion.KEY_IMAGE
 import engineer.yusrisahrul.chatapp.util.Constants.Companion.KEY_LAST_MESSAGE
 import engineer.yusrisahrul.chatapp.util.Constants.Companion.KEY_MESSAGE
@@ -39,7 +40,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.HashMap
 
-class ChatActivity : AppCompatActivity() {
+class ChatActivity : BaseActivity() {
 
     private val binding: ActivityChatBinding by lazy {
         ActivityChatBinding.inflate(layoutInflater)
@@ -54,6 +55,8 @@ class ChatActivity : AppCompatActivity() {
 
     private var conversationId: String? = null
 
+    private var isReceiverAvailable = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
@@ -61,6 +64,11 @@ class ChatActivity : AppCompatActivity() {
         init()
         setListeners()
         listenMessages()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        listenAvailabilityOfReceiver()
     }
 
     private fun init() {
@@ -93,6 +101,28 @@ class ChatActivity : AppCompatActivity() {
             addConversation(conversation)
         }
         binding.inputMessage.text = null
+    }
+
+    private fun listenAvailabilityOfReceiver() {
+        database.collection(
+            KEY_COLLECTION_USERS
+        ).document(receiverUser.id)
+            .addSnapshotListener(this) { value, error ->
+                if (error != null) {
+                    return@addSnapshotListener
+                }
+                if (value != null) {
+                    if (value.getLong(KEY_AVAILABILITY) != null) {
+                        val availability = Objects.requireNonNull(
+                            value.getLong(KEY_AVAILABILITY)
+                        ) ?: -1
+                        isReceiverAvailable = availability.toInt() == 1
+                    }
+                }
+                binding.textAvailability.visibility =
+                    if (isReceiverAvailable) View.VISIBLE
+                    else View.GONE
+            }
     }
 
     private fun listenMessages() {
