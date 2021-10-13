@@ -24,5 +24,26 @@ class Constants {
         const val KEY_RECEIVER_IMAGE = "receiverImage"
         const val KEY_LAST_MESSAGE = "lastMessage"
         const val KEY_AVAILABILITY = "availability"
+        private const val REMOTE_MSG_AUTHORIZATION = "Authorization"
+        private const val REMOTE_MSG_CONTENT_TYPE = "Content-Type"
+        const val REMOTE_MSG_DATA = "data"
+        const val REMOTE_MSG_REGISTRATION_IDS = "registration_ids"
+
+        private var remoteMsgHeader = HashMap<String, String>()
+
+        fun getRemoteMsgHeaders() : HashMap<String, String> {
+            remoteMsgHeader = HashMap()
+            remoteMsgHeader[REMOTE_MSG_AUTHORIZATION] = "key=AAAAJaDFp-o:APA91bGnzbZbtSBdJJHCNGweGF8xaQ3WPAFE5sblKkyKVxMu74UNC3dMq-rGeX-oaRSbJ6-R3eDkLIbSi9DJ60djvSVwB-Kre4zGZu17U_-UgSHHyPWzAHGK4F2NMh4RBJUCSVuYD0Db"
+            remoteMsgHeader[REMOTE_MSG_CONTENT_TYPE] = "application/json"
+            return remoteMsgHeader
+//            if (remoteMsgHeader == null) {
+//                remoteMsgHeader = HashMap()
+//                remoteMsgHeader?.put(REMOTE_MSG_AUTHORIZATION,
+//                    "key=AAAAJaDFp-o:APA91bGnzbZbtSBdJJHCNGweGF8xaQ3WPAFE5sblKkyKVxMu74UNC3dMq-rGeX-oaRSbJ6-R3eDkLIbSi9DJ60djvSVwB-Kre4zGZu17U_-UgSHHyPWzAHGK4F2NMh4RBJUCSVuYD0Db"
+//                )
+//                remoteMsgHeader?.put(REMOTE_MSG_CONTENT_TYPE, "application/json")
+//            }
+//            return remoteMsgHeader
+        }
     }
 }
